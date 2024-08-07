@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #chatBox {
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            height: 400px;
+            overflow-y: scroll;
+        }
+        #userInput {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+        }
+        #userInput input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #userInput button {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chatBox">
+        <!-- Chat messages will be appended here -->
+    </div>
+    <div id="userInput">
+        <input type="text" id="message" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var messageInput = document.getElementById('message');
+            var message = messageInput.value;
+            if (!message.trim()) return;
+
+            // Display user message
+            var chatBox = document.getElementById('chatBox');
+            var userMessage = document.createElement('div');
+            userMessage.textContent = 'User: ' + message;
+            chatBox.appendChild(userMessage);
+
+            // Clear the input field
+            messageInput.value = '';
+
+            // Send message to server
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/chat', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Display chatbot response
+                        var response = JSON.parse(xhr.responseText);
+                        var botMessage = document.createElement('div');
+                        botMessage.textContent = 'Bot: ' + response.message;
+                        chatBox.appendChild(botMessage);
+
+                        // Scroll to the bottom of the chat box
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    } else {
+                        alert('Error: ' + xhr.status);
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({ message: message }));
+        }
+    </script>
+    <a href="http://10.40.1.109:8000/two">디자인 변경</a>
+</body>
+</html>

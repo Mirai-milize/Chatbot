@@ -1,0 +1,7 @@
+langchain-community
+grobid-client 
+openai 
+faiss-cpu 
+PyPDF2 
+tiktoken
+flask

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+
+
+    <title>chatbot</title>
+  
+</head>
+<body>
+<div class='main' id=''>
+    <div class='container' id=''>
+        <div class='flex' id=''>
+          <!-- 왼쪽 상태바 start -->
+          <div class='left_body ' id=''>
+            
+          </div>
+
+          <!-- 왼쪽 상태바 end -->
+          <!-- 오른쪽 상태바 -->
+          <div class='right_body ' id=''>
+        <!-- header start -->
+            <div class='header' id=''>
+                <div class='header_title' id=''>
+                    <h2>Chat Genia</h2>
+                </div>
+            </div>
+
+        <!-- header end -->
+
+            <div class="chatBox" id="chatBox">
+                <!-- Chat messages will be appended here -->
+     
+            </div>
+            <div class='' id=''>
+                <div class="chatBox_img"><img src="../static/Character.png" alt="chunjae_img"></div>
+                <div class="userInput" id="userInput">
+                    <input type="text" id="message" placeholder="Please message...">
+                    <button onclick="sendMessage()" id="sendBtn"><i class='fas fa-arrow-right'></i></button>
+                </div>
+            </div>
+
+        </div>
+          <!-- 오른쪽 상태바 end -->
+
+          <script>
+            const messageInput = document.getElementById("message");
+            const chatBox = document.getElementById('chatBox');
+            const sendBtn = document.getElementById("sendBtn");
+            let xhr;
+    
+            messageInput.addEventListener("keyup", (e) => {
+                if (e.keyCode === 13) {
+                    sendMessage();
+                }
+            });
+            
+            function sendMessage() {
+              console.log(sendBtn.innerHTML)
+                if (sendBtn.innerHTML === '<i class="far fa-window-close"></i>') {
+                    xhr.abort();
+                }
+    
+                let message = messageInput.value;
+                if (!message.trim()) return;
+    
+                // Display user message
+                var userMessage = document.createElement('div');
+                userMessage.classList.add("userInput");
+                userMessage.textContent = '사용자: ' + message;
+                chatBox.appendChild(userMessage);
+    
+                // 스크롤바 하단으로 이동
+                chatBox.scrollTop = chatBox.scrollHeight;
+    
+                // Clear the input field
+                messageInput.value = '';
+    
+                // Send message to server
+                xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function () {
+                    if(xhr.readyState === XMLHttpRequest.OPENED) {
+                        console.log("답변 가져오기를 기다리는 중");
+                        messageInput.disabled = true;
+                        // sendBtn.disabled = true;
+                        messageInput.value = "답변 가져오는 중...";
+                        sendBtn.innerHTML = '<i class="far fa-window-close"></i>';
+                    }
+    
+                    if(xhr.readyState === XMLHttpRequest.DONE) {
+                        console.log("요청 종료됨");
+                        messageInput.disabled = false;
+                        sendBtn.disabled = false;
+                        messageInput.value = "";
+                        sendBtn.innerHTML = "<i class='fas fa-arrow-right'></i>"
+                        if (xhr.status === 200) {
+                            // Display chatbot response
+                            console.log("정상적으로 답변 가져옴");
+                            var response = JSON.parse(xhr.responseText);
+                            var botMessage = document.createElement('div');
+                            botMessage.classList.add("answer")
+                            botMessage.textContent = 'Genia: ' + response.message;
+                            chatBox.appendChild(botMessage);
+    
+                            // Scroll to the bottom of the chat box
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        } else if (xhr.status === 0) {
+                            console.log("답변 가져오기 중지함");
+                            messageInput.disabled = false;
+                            messageInput.value = "";
+                            sendBtn.innerHTML = "<i class='fas fa-arrow-right'></i>";
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        } else {
+                            alert('Error: ' + xhr.status);
+                            chatBox.scrollTop = chatBox.scrollHeight;                        
+                        }
+                    }
+                };
+                xhr.open('POST', '/chat', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ message: message }));
+            }
+        </script>
+      </div>
+    </div>
+</div>    
+
+</body>
+</html>
