@@ -7,6 +7,10 @@ from PyPDF2 import PdfReader
 from langchain.chains import AnalyzeDocumentChain
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
+import numpy as np
+import faiss
 ####
 from dotenv import load_dotenv
 
@@ -40,13 +44,34 @@ qa_document_chain = AnalyzeDocumentChain(combine_docs_chain=qa_chain)
 #### 
 
 
+
+# 임베딩 및 벡터 데이터베이스 생성
+embeddings_model = OpenAIEmbeddings()
+texts = raw_text.split("\n")  # 텍스트를 줄 단위로 분할
+embeddings = embeddings_model.embed_documents(texts)
+dimension = len(embeddings[0])
+index = faiss.IndexFlatL2(dimension)
+index.add(np.array(embeddings))
+print(index)
+
+# 벡터 데이터베이스를 이용한 검색 함수
+def search_documents(query, k=5):
+    query_embedding = embeddings_model.embed_query(query)
+    distances, indices = index.search(np.array([query_embedding]), k)
+    return [texts[i] for i in indices[0]]
+
+
+# GPT 모델을 이용한 응답 생성 함수
 def get_response(prompt):
-
+    relevant_docs = search_documents(prompt)
+    combined_docs = "\n".join(relevant_docs)
     response = qa_document_chain.run(
-    input_document=raw_text,
-    question=prompt)
-
+        input_document=combined_docs,
+        question=prompt
+    )
     return response
+
+
 
 app = Flask(__name__)
 
@@ -60,18 +85,15 @@ session_state = {
 
 
 @app.route('/')
-def index():
-    
+def page1():
     return render_template('page1.html')
 
 @app.route('/two')
-def index2():
+def chatbot():
     return render_template('chatbot.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
-
-
 
     user_input = request.json.get('message')
     initial_content = '다음 내용에 대해 초등학생에게 이야기하듯이 대답해줘 '
@@ -79,10 +101,6 @@ def chat():
     session_state['messages'].append(("User", user_input))
     response = get_response(full_prompt)
     session_state['messages'].append(("GPT", response))
-
-
-
-   
 
 
     return jsonify({'message': response})
