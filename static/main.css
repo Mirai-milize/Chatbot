@@ -121,8 +121,7 @@
     box-shadow: inset 0 0.0625em 0.125em rgba(10,10,10,.05);
     max-width: 100%;
     width: 100%;
-    border-color: var(--c-back_gray);
-    border-radius: 5px;
+    border-radius: 30px;
     line-height: 1.5;
     font-size: 100%;
   }
@@ -254,6 +253,7 @@
   .flex {
       display: flex;
       width: 100%;
+      justify-content: space-around;
   }
   
   .flex_center{
@@ -280,18 +280,24 @@
   .right_body {
       width: 100%;
       max-width: 55rem;
+      background-image: url("../static/back.png");
+      background-position: center;
+      background-size: 130%;
   }
   
   
   .header {
       display: flex;
       align-items: center;
-      box-shadow: 0 2px 0px 0px lightgray;
+      flex-direction: row;
+      justify-content: space-between;
+      visibility: hidden;
+    
   }
   
   .header_title{
       font-size: 25px;
-      color: gray;
+      color: #1E0E62;
       font-weight: 100;
   }
   
@@ -305,6 +311,7 @@
       min-height: 600px;
       position: relative;
       padding: 20px 0;
+
   }
   
   .chatBox .userInput,
@@ -318,12 +325,18 @@
   
   .chatBox .userInput {
       align-self: end;
-      background-color: rgba(195, 200, 204, 0.3);
+      background-color: #f4f4f4;
     }
   
+    .chatBox .ansImg {
+      align-self: start;
+      width: 10%;
+    }
+
   .chatBox .answer {
       align-self: start;
-      background-color: rgb(201, 212, 243, 0.3);
+      border: 2px solid #EBEAED;
+      margin-left: 60px;
   }
   
   .chatBox_img{
@@ -334,8 +347,8 @@
       width: 100%;
       display: flex;
       border: none;
-      background-color: var(--c-back_lightgray);
-      border-radius: 15px;
+      background-color: #f4f4f4;
+      border-radius: 30px;
   
   }
   
@@ -362,3 +375,10 @@
       box-shadow: 0 0 0 1.5px black;
       outline: none;
   }
+
+
+.home{
+  width: 17%;
+}
+  
+
