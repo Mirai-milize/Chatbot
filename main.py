@@ -29,7 +29,7 @@ os.environ['OPENAI_API_KEY'] = api_key
 #### PDF 위치 저장
 loader = PyPDFDirectoryLoader('./pdf/')
 raw_text = loader.load_and_split()
-   
+
 
 #### gpt 모델 설정
 model = ChatOpenAI(model="gpt-4o") # gpt-3.5-turbo, gpt-4
@@ -78,19 +78,7 @@ def get_response(prompt):
         retriever = retriever,
         return_source_documents=True)
     
-
     response = chain(prompt)
-    # print('source is ..')
-    # print(response['source_documents'])
-    # print(type(response['source_documents'][0]))
-    # for i in range(len(response['source_documents'])):
-    #     print('docs is ..')
-    #     print(response['source_documents'][i])
-
-
-
-    
-    # 메타 데이터와 함께 응답 반환
     full_response = f"{response['answer']}" 
     
     return full_response
