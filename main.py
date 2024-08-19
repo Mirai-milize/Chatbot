@@ -57,11 +57,13 @@ embeddings_model = OpenAIEmbeddings()
 
 texts = split_text(raw_text)
 
-print('vector store start')
+print('vector store start-----------')
 vectorstore = FAISS.from_documents(texts,
     embedding = embeddings_model,
     distance_strategy = DistanceStrategy.COSINE  
     )
+print('vector store end-----------')
+
 
 # GPT 모델을 이용한 응답 생성 함수
 def get_response(prompt):
@@ -113,7 +115,9 @@ def chat():
 
     initial_content = '''
     너의 이름은 에듀로봇이야. 안녕이라는 질문에는 "안녕하세요, 저는 에듀로봇입니다. 무엇을 도와드릴까요?" 라고 답을 해.
-    '개정', '변경', '바뀐'이라는 질문에는 연도별 변경사항과 이전 년도의 내용도 포함해서 마크다운 형식으로 답해줘 그리고 이 답변에는 연도와 출처를 포함해 줘. 
+    '법'이라는 단어를 '법률'로 인식하고 답변해.
+    '개정', '변경', '바뀐', '수정' 이라는 질문에는 연도별 변경사항과 이전 년도의 내용도 포함해서 마크다운 문법으로 답해줘 그리고 이 답변에는 연도와 출처를 포함해 줘. 
+    '표'라는 질문에 대해 html 표 형식으로 답변해 출처를 마지막에 포함해서 보내줘.
     다음 질문에 대해 한국어로 대답해.
 
     '''
@@ -131,7 +135,11 @@ def chat():
     session_messages.append(("GPT", response))
     session['messages'] = session_messages
 
+    # 답변 확인
+    print('response is-----------------------\n')
+    print(response)
+
     return jsonify({'message': response})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8000)
+    app.run(debug=True, host='0.0.0.0', port=80)
